@@ -26,6 +26,6 @@ docker pull ethereum/client-go:alltools-latest
 docker run --rm -v $(pwd)/contract:/root ethereum/client-go:alltools-latest abigen --bin=/root/build/ERC20.bin --abi=/root/build/ERC20.abi --pkg=usdt --out=/root/ERC20.go
 ```
 
-Ether主鏈
-usdt合約:0xdAC17F958D2ee523a2206206994597C13D831ec7
-節點:https://cloudflare-eth.com
+Ether主鏈<br>
+usdt合約:0xdAC17F958D2ee523a2206206994597C13D831ec7<br>
+節點:https://cloudflare-eth.com<br>
