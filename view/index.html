@@ -6,17 +6,119 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+  <style>
+    .div1 {
+    display: inline-block;
+    }
+    .div2 {
+    display: inline-block;
+    }
+    .parent {
+    display: flex;
+    }
+    </style>
 </head>
 
 <body>
   <div>
-    <div>Address：</div>
+    <fb:login-button 
+    scope="public_profile,email"
+    onlogin="checkLoginState();">
+    </fb:login-button>
+
     <div>
-      <input value="">
-      <button>Create</button>
+      <div class="parent">
+        <div class="div1">Address:</div>
+        <div class="div2" id="address"></div>
+      </div>
+      <div class="div1" id="qrcode"></div>
     </div>
-    <div>餘額：</div>
+    <div>
+      <div class="parent">
+        <div class="div1">餘額:</div>
+        <div class="div2" id="balance"></div>
+      </div>
+    </div>
   </div>
+  <script>
+    var refreshIntervalId;
+    var fbid;
+  
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '1263901774454393',
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v15.0'
+      });
+        
+      FB.AppEvents.logPageView();   
+        
+    };
+  
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "https://connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+  
+    function checkLoginState() {
+      FB.getLoginStatus(function(response) {
+          console.log(response);
+          if(response.status==="connected"){
+            fbid = response.authResponse.userID;
+              $.ajax({
+                  type: "POST",
+                  url: "bindfb",
+                  data: JSON.stringify({fbid: response.authResponse.userID}),
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  success: function (data) { 
+                      if(data.State.Code===10000){
+                        clearInterval(refreshIntervalId);
+                        console.log(data.Address);
+                        $("#address").html(data.Address);
+                        $('#qrcode').qrcode(data.Address);
+                        refreshIntervalId = setInterval(fname, 3000);
+                      }else{
+                          alert(data.State.Code);
+                      }
+                  },
+                  error: function (errMsg) {
+                      alert(errMsg);
+                  }
+              });
+          }
+      });
+    }
+    function fname() {
+      $.ajax({
+                  type: "POST",
+                  url: "balance",
+                  data: JSON.stringify({fbid: fbid}),
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  success: function (data) { 
+                      if(data.State.Code===10000){
+                        console.log(data.Address);
+                        $("#balance").html(data.Balance);
+                      }else{
+                          clearInterval(refreshIntervalId);
+                          alert(data.State.Code);
+                      }
+                  },
+                  error: function (errMsg) {
+                      alert(errMsg);
+                  }
+              });
+    }
+
+  </script>  
 </body>
 
 </html>
