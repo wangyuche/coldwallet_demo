@@ -19,7 +19,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 	usdt "github.com/wangyuche/coldwallet_demo/contract"
-	"gitlab.edufgs.com/gomod/Mysql"
+	"github.com/wangyuche/coldwallet_demo/src/Mysql"
 )
 
 var (
